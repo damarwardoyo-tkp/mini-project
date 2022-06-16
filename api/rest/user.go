@@ -21,20 +21,6 @@ func (h RestHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(userRedis))
-
-	//user, err := h.manager.GetUser(nama)
-	//if err != nil {
-	//	w.Header().Add("Content-Type", "application/json")
-	//	w.WriteHeader(http.StatusNotFound)
-	//	return
-	//}
-	//resp, err := json.Marshal(user)
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//w.Header().Add("Content-Type", "application/json")
-	//w.WriteHeader(http.StatusOK)
-	//w.Write(resp)
 }
 
 func (h RestHandler) GetAllUserHandler(w http.ResponseWriter, r *http.Request) {
