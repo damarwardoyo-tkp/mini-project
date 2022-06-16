@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"mini-project/entity"
@@ -29,8 +31,19 @@ func (repo *UserDBRepoImpl) InsertUserYugabyte(user entity.User) error {
 	return nil
 }
 
-func (repo *UserDBRepoImpl) InsertUserRedis(user entity.User) {
-	fmt.Printf("nama ku %v", user.Nama)
+func (repo *UserDBRepoImpl) InsertUserRedis(ctx context.Context, user entity.User) error {
+	uuid := user.UUID.String()
+	userJson, err := json.Marshal(&user)
+	if err != nil {
+		log.Printf("error ketika marshal data, err: %v", err)
+		return err
+	}
+	err = repo.redisClient.Redis.Set(ctx, uuid, string(userJson), 300).Err()
+	if err != nil {
+		log.Printf("[Redis] Gagal insert data user ke redis, err: %v", err)
+		return err
+	}
+	return nil
 }
 
 func (repo *UserDBRepoImpl) GetUserYugabyte() {

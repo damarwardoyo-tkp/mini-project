@@ -36,7 +36,7 @@ func (h RestHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	if err := h.manager.CreateUser(req); err != nil {
+	if err := h.manager.CreateUser(r.Context(), req); err != nil {
 		log.Println("[CreateUserHandler]Gagal membuat user baru")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"mini-project/entity"
 	"mini-project/infra/db"
 	"mini-project/infra/redis"
@@ -8,7 +9,7 @@ import (
 )
 
 type UserManager interface {
-	CreateUser(user entity.User) error
+	CreateUser(context context.Context, user entity.User) error
 	GetUserList()
 	GetUser()
 }
