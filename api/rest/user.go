@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"log"
 	"mini-project/entity"
@@ -36,12 +35,6 @@ func (h RestHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	uuid, err := uuid.NewUUID()
-	if err != nil {
-		log.Println("Gagal membuat UUID")
-		log.Fatalln(err)
-	}
-	req.UUID = uuid
 
 	if err := h.manager.CreateUser(req); err != nil {
 		log.Println("[CreateUserHandler]Gagal membuat user baru")
