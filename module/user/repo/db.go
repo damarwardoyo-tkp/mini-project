@@ -1,9 +1,7 @@
 package repo
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"mini-project/entity"
 	"mini-project/infra/db"
@@ -31,33 +29,63 @@ func (repo *UserDBRepoImpl) InsertUserYugabyte(user entity.User) error {
 	return nil
 }
 
-func (repo *UserDBRepoImpl) InsertUserRedis(ctx context.Context, user entity.User) error {
-	uuid := user.UUID.String()
+func (repo *UserDBRepoImpl) InsertUserRedis(user entity.User) error {
+	client := repo.redisClient.Redis.Get()
+	defer client.Close()
+
 	userJson, err := json.Marshal(&user)
 	if err != nil {
 		log.Printf("error ketika marshal data, err: %v", err)
 		return err
+
 	}
-	err = repo.redisClient.Redis.Set(ctx, uuid, string(userJson), 300).Err()
+	_, err = client.Do("SETEX", user.Nama, 300, string(userJson))
 	if err != nil {
-		log.Printf("[Redis] Gagal insert data user ke redis, err: %v", err)
+		log.Printf("[Redis] Gagal insert data user %s ke redis, err: %s", user.Nama, err)
 		return err
 	}
 	return nil
 }
 
-func (repo *UserDBRepoImpl) GetUserYugabyte() {
-	fmt.Println("user")
+func (repo *UserDBRepoImpl) GetUserYugabyte(nama string) (entity.User, error) {
+	var user entity.User
+	if result := repo.yugabyteClient.DB.Where("nama = ?", nama).First(&user); result.Error != nil {
+		log.Printf("[Yugabyte] Gagal mengambil data user %s dari yugabyte, err: %s", nama, result.Error)
+		return user, result.Error
+	}
+	return user, nil
 }
 
-func (repo *UserDBRepoImpl) GetUserRedis() {
-	fmt.Println("user")
+func (repo *UserDBRepoImpl) GetUserRedis(nama string) (string, error) {
+	client := repo.redisClient.Redis.Get()
+	defer client.Close()
+
+	value, err := client.Do("GET", nama)
+	if value == nil {
+		log.Printf("[Redis] Gagal mengambil data user %s dari redis, err: %v", nama, err)
+		return "", err
+	}
+	return string(value.([]uint8)), nil
 }
 
-func (repo *UserDBRepoImpl) GetUserListYugabyte() {
-	fmt.Println("list user")
+func (repo *UserDBRepoImpl) GetUserListYugabyte() ([]entity.User, error) {
+	var users []entity.User
+	repo.yugabyteClient.DB.Find(&users)
+
+	if result := repo.yugabyteClient.DB.Find(&users); result.Error != nil {
+		log.Printf("[Yugabyte] Gagal mengambil data list user dari yugabyte, err: %s", result.Error)
+		return nil, result.Error
+	}
+	return users, nil
 }
 
 func (repo *UserDBRepoImpl) GetUserListRedis() {
-	fmt.Println("list user")
+	client := repo.redisClient.Redis.Get()
+	defer client.Close()
+
+	_, err := client.Do("GET", 0)
+	if err != nil {
+		log.Printf("[Redis] Gagal mengambil data list user dari redis, err: %v", err)
+		//return "", err
+	}
 }

@@ -2,7 +2,6 @@ package rest
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"mini-project/entity"
@@ -12,20 +11,44 @@ import (
 func (h RestHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	nama := vars["nama"]
-	log.Print(nama)
-	fmt.Println(nama)
-	h.manager.GetUser()
-}
 
-func (h RestHandler) GetUserCurlHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	nama := vars["nama"]
-	fmt.Println(nama)
-	h.manager.GetUser()
+	userRedis, err := h.manager.GetUser(nama)
+	if err != nil {
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userRedis))
+
+	//user, err := h.manager.GetUser(nama)
+	//if err != nil {
+	//	w.Header().Add("Content-Type", "application/json")
+	//	w.WriteHeader(http.StatusNotFound)
+	//	return
+	//}
+	//resp, err := json.Marshal(user)
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//w.Header().Add("Content-Type", "application/json")
+	//w.WriteHeader(http.StatusOK)
+	//w.Write(resp)
 }
 
 func (h RestHandler) GetAllUserHandler(w http.ResponseWriter, r *http.Request) {
-	h.manager.GetUserList()
+	resp, err := h.manager.GetUserList()
+	if err != nil {
+		log.Println("[GetAllUserHandler] Gagal mengambil data list user")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode("Error")
+		return
+	}
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 
 }
 
@@ -36,8 +59,8 @@ func (h RestHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	if err := h.manager.CreateUser(r.Context(), req); err != nil {
-		log.Println("[CreateUserHandler]Gagal membuat user baru")
+	if err := h.manager.CreateUser(req); err != nil {
+		log.Println("[CreateUserHandler] Gagal membuat user baru")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode("Error")

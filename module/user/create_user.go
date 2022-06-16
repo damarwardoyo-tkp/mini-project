@@ -1,13 +1,12 @@
 package user
 
 import (
-	"context"
 	"github.com/google/uuid"
 	"log"
 	"mini-project/entity"
 )
 
-func (m Manager) CreateUser(ctx context.Context, user entity.User) error {
+func (m Manager) CreateUser(user entity.User) error {
 	uuid, err := uuid.NewUUID()
 	if err != nil {
 		log.Println("Gagal membuat UUID")
@@ -20,7 +19,7 @@ func (m Manager) CreateUser(ctx context.Context, user entity.User) error {
 		return err
 	}
 
-	if err := m.userDBRepo.InsertUserRedis(ctx, user); err != nil {
+	if err := m.userDBRepo.InsertUserRedis(user); err != nil {
 		log.Println("[CreateUser][2/2] Redis gagal")
 		return err
 	}

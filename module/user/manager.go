@@ -1,7 +1,6 @@
 package user
 
 import (
-	"context"
 	"mini-project/entity"
 	"mini-project/infra/db"
 	"mini-project/infra/redis"
@@ -9,9 +8,10 @@ import (
 )
 
 type UserManager interface {
-	CreateUser(context context.Context, user entity.User) error
-	GetUserList()
-	GetUser()
+	CreateUser(user entity.User) error
+	GetUserList() ([]entity.User, error)
+	GetUserListRedis() (string, error)
+	GetUser(nama string) (string, error)
 }
 
 type Manager struct {

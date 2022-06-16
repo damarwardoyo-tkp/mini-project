@@ -1,35 +1,51 @@
 package redis
 
 import (
-	"context"
 	"fmt"
-	"github.com/go-redis/redis/v9"
-	"log"
+	"github.com/gomodule/redigo/redis"
 )
 
+//type RedisClient struct {
+//	Redis *redis.Client
+//}
+
 type RedisClient struct {
-	Redis *redis.Client
+	Redis *redis.Pool
 }
 
-func newConn() (*redis.Client, error) {
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
-
-	if err := client.Ping(context.Background()).Err(); err != nil {
-		log.Printf("[Redis]Gagal menginisiasi koneksi ke redis, err: %v", err)
-		return nil, err
+func newPool() *redis.Pool {
+	return &redis.Pool{
+		MaxIdle:   80,
+		MaxActive: 12000,
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", ":6379")
+			if err != nil {
+				panic(err.Error())
+			}
+			return c, err
+		},
 	}
-	return client, nil
 }
+
+//func newConn() (*redis.Client, error) {
+//	client := redis.NewClient(&redis.Options{
+//		Addr:     "localhost:6379",
+//		Password: "",
+//		DB:       0,
+//	})
+//
+//	if err := client.Ping(context.Background()).Err(); err != nil {
+//		log.Printf("[Redis]Gagal menginisiasi koneksi ke redis, err: %v", err)
+//		return nil, err
+//	}
+//	return client, nil
+//}
 
 func NewRedisClient() *RedisClient {
-	redis, err := newConn()
-	if err != nil {
-		log.Fatalln("[RedisClient]Gagal membuat Redis Client")
-	}
+	redis := newPool()
+	//if err != nil {
+	//	log.Fatalln("[RedisClient]Gagal membuat Redis Client")
+	//}
 	client := RedisClient{
 		Redis: redis,
 	}
