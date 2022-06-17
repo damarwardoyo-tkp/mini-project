@@ -19,8 +19,8 @@ type Manager struct {
 
 func NewUserManager(redis *redis.RedisClient, yugabyte *db.YugabyteClient) UserManager {
 	userRepo := repo.NewUserDBRepo(redis, yugabyte)
-	a := Manager{
+	manager := Manager{
 		userDBRepo: userRepo,
 	}
-	return &a
+	return &manager
 }

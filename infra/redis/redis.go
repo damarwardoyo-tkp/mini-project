@@ -5,10 +5,6 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-//type RedisClient struct {
-//	Redis *redis.Client
-//}
-
 type RedisClient struct {
 	Redis *redis.Pool
 }
@@ -27,25 +23,8 @@ func newPool() *redis.Pool {
 	}
 }
 
-//func newConn() (*redis.Client, error) {
-//	client := redis.NewClient(&redis.Options{
-//		Addr:     "localhost:6379",
-//		Password: "",
-//		DB:       0,
-//	})
-//
-//	if err := client.Ping(context.Background()).Err(); err != nil {
-//		log.Printf("[Redis]Gagal menginisiasi koneksi ke redis, err: %v", err)
-//		return nil, err
-//	}
-//	return client, nil
-//}
-
 func NewRedisClient() *RedisClient {
 	redis := newPool()
-	//if err != nil {
-	//	log.Fatalln("[RedisClient]Gagal membuat Redis Client")
-	//}
 	client := RedisClient{
 		Redis: redis,
 	}

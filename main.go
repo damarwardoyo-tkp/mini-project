@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"log"
+	"mini-project/api"
+	"mini-project/api/gql"
 	"mini-project/api/rest"
 	"mini-project/infra/db"
 	"mini-project/infra/redis"
@@ -17,10 +19,11 @@ import (
 func main() {
 	redisClient := redis.NewRedisClient()
 	yugaByteClient := db.NewYugabyteClient()
-	//yugaByteClient.DB.AutoMigrate(&entity.User{})
 	userManager := user.NewUserManager(redisClient, yugaByteClient)
 	restHandler := rest.NewRestHandler(userManager)
-	router := restHandler.InitHandlers()
+	gqlHander := gql.NewGqlHandler(userManager)
+	handler := api.NewHandler(restHandler, gqlHander)
+	router := handler.InitHandlers()
 
 	var wait time.Duration
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
@@ -62,5 +65,4 @@ func main() {
 	// to finalize based on context cancellation.
 	log.Println("shutting down")
 	os.Exit(0)
-	//http.ListenAndServe(":4000", router)
 }
