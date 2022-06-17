@@ -8,9 +8,9 @@ import (
 )
 
 type UserManager interface {
-	CreateUser(user entity.User) error
+	CreateUser(entity.User) error
 	GetUserList() (string, error)
-	GetUser(nama string) (string, error)
+	GetUser(string) (string, error)
 }
 
 type Manager struct {

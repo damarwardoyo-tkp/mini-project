@@ -10,7 +10,7 @@ func (m Manager) GetUser(nama string) (string, error) {
 	if userRedis == "" {
 		user, err := m.userDBRepo.GetUserYugabyte(nama)
 		if err != nil {
-			log.Printf("[GetUser] Gagal menemukan user %v dari yugabyte untuk memperbaharui cache. err:%v", nama, err)
+			log.Printf("[GetUser] Gagal mendapatkan user %v dari yugabyte dan redis", nama)
 			return "", err
 		}
 		m.userDBRepo.InsertUserRedis(user)

@@ -88,8 +88,6 @@ func (repo *UserDBRepoImpl) GetUserRedis(nama string) (string, error) {
 
 func (repo *UserDBRepoImpl) GetUserListYugabyte() ([]entity.User, error) {
 	var users []entity.User
-	repo.yugabyteClient.DB.Find(&users)
-
 	if result := repo.yugabyteClient.DB.Find(&users); result.Error != nil {
 		log.Printf("[Yugabyte] Gagal mendapatkan data list user dari yugabyte, err: %s", result.Error)
 		return nil, result.Error

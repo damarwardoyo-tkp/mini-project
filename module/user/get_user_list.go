@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 )
 
@@ -11,14 +10,12 @@ func (m Manager) GetUserList() (string, error) {
 	if usersRedis == "" {
 		users, err := m.userDBRepo.GetUserListYugabyte()
 		if err != nil {
-			log.Println("[GetUserList] Gagal mengambil list user dari yugabyte")
+			log.Println("[GetUserList] Gagal mendapatkan list user dari yugabyte dan redis")
 			return "", err
 		}
 		m.userDBRepo.InsertUserRedisBulk(users)
 		resp, err := json.Marshal(users)
-		fmt.Println("data user list dari yugabyte")
 		return string(resp), err
 	}
-	fmt.Println("data user list dari redis")
 	return usersRedis, err
 }
