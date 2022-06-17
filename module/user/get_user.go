@@ -14,9 +14,8 @@ func (m Manager) GetUser(nama string) (string, error) {
 			return "", err
 		}
 		m.userDBRepo.InsertUserRedis(user)
-		log.Println("[GetUser] memperbarui data di redis")
-		resp, _ := json.Marshal(user)
-		return string(resp), nil
+		resp, err := json.Marshal(user)
+		return string(resp), err
 	}
 	return userRedis, nil
 

@@ -12,7 +12,7 @@ func (h RestHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	nama := vars["nama"]
 
-	userRedis, err := h.manager.GetUser(nama)
+	resp, err := h.manager.GetUser(nama)
 	if err != nil {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
@@ -20,7 +20,7 @@ func (h RestHandler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(userRedis))
+	w.Write([]byte(resp))
 }
 
 func (h RestHandler) GetAllUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,12 +29,11 @@ func (h RestHandler) GetAllUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("[GetAllUserHandler] Gagal mengambil data list user")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("Error")
 		return
 	}
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	w.Write([]byte(resp))
 
 }
 

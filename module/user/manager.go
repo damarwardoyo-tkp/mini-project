@@ -9,8 +9,7 @@ import (
 
 type UserManager interface {
 	CreateUser(user entity.User) error
-	GetUserList() ([]entity.User, error)
-	GetUserListRedis() (string, error)
+	GetUserList() (string, error)
 	GetUser(nama string) (string, error)
 }
 

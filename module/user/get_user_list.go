@@ -1,24 +1,24 @@
 package user
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
-	"mini-project/entity"
 )
 
-func (m Manager) GetUserList() ([]entity.User, error) {
-	users, err := m.userDBRepo.GetUserListYugabyte()
-	if err != nil {
-		log.Println("[GetUserList] Gagal mengambil list user")
-		return nil, err
+func (m Manager) GetUserList() (string, error) {
+	usersRedis, err := m.userDBRepo.GetUserListRedis()
+	if usersRedis == "" {
+		users, err := m.userDBRepo.GetUserListYugabyte()
+		if err != nil {
+			log.Println("[GetUserList] Gagal mengambil list user dari yugabyte")
+			return "", err
+		}
+		m.userDBRepo.InsertUserRedisBulk(users)
+		resp, err := json.Marshal(users)
+		fmt.Println("data user list dari yugabyte")
+		return string(resp), err
 	}
-	return users, nil
-}
-
-func (m Manager) GetUserListRedis() (string, error) {
-	//users, err := m.userDBRepo.GetUserListYugabyte()
-	//if err != nil {
-	//	log.Println("[GetUserList] Gagal mengambil list user")
-	//	return "nil", err
-	//}
-	return "users", nil
+	fmt.Println("data user list dari redis")
+	return usersRedis, err
 }
