@@ -1,9 +1,7 @@
 package rest
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
-	"log"
 	"mini-project/entity"
 	"net/http"
 )
@@ -40,14 +38,15 @@ func (h RestHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var req entity.User
 	err := ParseBody(r.Body, &req)
 	if err != nil {
-		log.Fatalln(err)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	if err := h.manager.CreateUser(req); err != nil {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error")
+		return
 	}
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode("Created")
 }
