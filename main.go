@@ -5,8 +5,8 @@ import (
 	"flag"
 	"log"
 	"mini-project/api"
-	"mini-project/api/gql"
 	"mini-project/api/rest"
+	"mini-project/graph"
 	"mini-project/infra/db"
 	"mini-project/infra/redis"
 	"mini-project/module/user"
@@ -21,7 +21,7 @@ func main() {
 	yugaByteClient := db.NewYugabyteClient()
 	userManager := user.NewUserManager(redisClient, yugaByteClient)
 	restHandler := rest.NewRestHandler(userManager)
-	gqlHander := gql.NewGqlHandler(userManager)
+	gqlHander := graph.NewGQLHandler(userManager)
 	handler := api.NewHandler(restHandler, gqlHander)
 	router := handler.InitHandlers()
 
