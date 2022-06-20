@@ -6,14 +6,31 @@ package graph
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
+	"mini-project/entity"
 	"mini-project/graph/generated"
 	"mini-project/graph/model"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	var user entity.User
+	user.Nama = input.Nama
+	user.Umur = input.Umur
+	user.Alamat = input.Alamat
+	user.Searchable = input.Searchable
+
+	uuid, err := r.manager.CreateUser(user)
+	if err != nil {
+		log.Printf("[GQL]Gagal membuat user baru, err:%v", err)
+	}
+	var resp model.User
+	resp.UUID = uuid
+	resp.Nama = input.Nama
+	resp.Umur = input.Umur
+	resp.Alamat = input.Alamat
+	resp.Searchable = input.Searchable
+
+	return &resp, err
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
@@ -23,13 +40,21 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 		log.Println(err)
 	}
 	if err := json.Unmarshal([]byte(users), &resp); err != nil {
-		log.Println(err)
+		log.Printf("[GQL]Gagal mendapat data list user, err:%v", err)
 	}
 	return resp, nil
 }
 
 func (r *queryResolver) User(ctx context.Context, searchable string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	var resp *model.User
+	user, err := r.manager.GetUser(searchable)
+	if err != nil || user == "[]" {
+		log.Println(err)
+	}
+	if err := json.Unmarshal([]byte(user), &resp); err != nil {
+		log.Printf("[GQL]Gagal mendapat data user, err:%v", err)
+	}
+	return resp, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

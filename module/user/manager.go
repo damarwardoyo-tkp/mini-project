@@ -8,7 +8,7 @@ import (
 )
 
 type UserManager interface {
-	CreateUser(entity.User) error
+	CreateUser(entity.User) (string, error)
 	GetUserList() (string, error)
 	GetUser(string) (string, error)
 }

@@ -42,7 +42,7 @@ func (h RestHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if err := h.manager.CreateUser(req); err != nil {
+	if _, err := h.manager.CreateUser(req); err != nil {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
