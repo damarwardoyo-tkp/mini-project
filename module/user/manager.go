@@ -2,6 +2,7 @@ package user
 
 import (
 	"mini-project/entity"
+	"mini-project/infra/nsq"
 	"mini-project/module/user/repo"
 )
 
@@ -12,12 +13,14 @@ type UserManager interface {
 }
 
 type Manager struct {
-	userDBRepo *repo.UserDBRepoImpl
+	userDBRepo  *repo.UserDBRepoImpl
+	nsqProducer *nsq.NSQProducer
 }
 
-func NewUserManager(userRepo *repo.UserDBRepoImpl) UserManager {
+func NewUserManager(userRepo *repo.UserDBRepoImpl, nsqProducer *nsq.NSQProducer) UserManager {
 	manager := Manager{
-		userDBRepo: userRepo,
+		userDBRepo:  userRepo,
+		nsqProducer: nsqProducer,
 	}
 	return &manager
 }

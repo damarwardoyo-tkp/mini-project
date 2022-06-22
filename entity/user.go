@@ -15,3 +15,8 @@ type UserRequest struct {
 	Alamat string `json:"alamat"`
 	Umur   int    `json:"umur"`
 }
+
+type UserMessage struct {
+	Request string
+	User    User
+}

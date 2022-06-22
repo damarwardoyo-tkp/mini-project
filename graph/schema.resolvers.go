@@ -28,7 +28,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	resp.Nama = input.Nama
 	resp.Umur = input.Umur
 	resp.Alamat = input.Alamat
-	resp.Searchable = fmt.Sprintf(input.Nama+" "+input.Alamat+" "+"%d", input.Umur)
+	resp.Searchable = fmt.Sprintf(uuid+input.Nama+" "+input.Alamat+" "+"%d", input.Umur)
 
 	return &resp, err
 }

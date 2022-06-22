@@ -9,6 +9,7 @@ import (
 	"mini-project/graph"
 	"mini-project/infra/db"
 	"mini-project/infra/es"
+	"mini-project/infra/nsq"
 	"mini-project/infra/redis"
 	"mini-project/module/user"
 	"mini-project/module/user/repo"
@@ -22,9 +23,10 @@ func main() {
 	redisClient := redis.NewRedisClient()
 	yugaByteClient := db.NewYugabyteClient()
 	esClient := es.NewElasticsearchClient()
+	nsqProducer := nsq.NewNSQProducer()
 
 	userRepo := repo.NewUserDBRepo(redisClient, yugaByteClient, esClient)
-	userManager := user.NewUserManager(userRepo)
+	userManager := user.NewUserManager(userRepo, nsqProducer)
 
 	restHandler := rest.NewRestHandler(userManager)
 	gqlHander := graph.NewGQLHandler(userManager)
