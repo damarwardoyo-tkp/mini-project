@@ -3,10 +3,9 @@
 package model
 
 type NewUser struct {
-	Nama       string `json:"nama"`
-	Umur       int    `json:"umur"`
-	Alamat     string `json:"alamat"`
-	Searchable string `json:"searchable"`
+	Nama   string `json:"nama"`
+	Umur   int    `json:"umur"`
+	Alamat string `json:"alamat"`
 }
 
 type User struct {

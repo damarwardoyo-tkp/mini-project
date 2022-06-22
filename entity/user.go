@@ -9,3 +9,9 @@ type User struct {
 	Umur       int       `json:"umur" gorm:"not null"`
 	Searchable string    `json:"searchable" gorm:"not null"`
 }
+
+type UserRequest struct {
+	Nama   string `json:"nama"`
+	Alamat string `json:"alamat"`
+	Umur   int    `json:"umur"`
+}

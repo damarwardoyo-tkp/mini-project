@@ -12,14 +12,13 @@ type User{
 
 type Query {
   users: [User]
-  user(searchable:String!): User
+  user(searchable:String!): [User]
 }
 
 input NewUser{
   nama: String!
   umur: Int!
   alamat: String!
-  searchable: String!
 }
 
 type Mutation {

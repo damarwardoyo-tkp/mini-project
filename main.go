@@ -8,8 +8,10 @@ import (
 	"mini-project/api/rest"
 	"mini-project/graph"
 	"mini-project/infra/db"
+	"mini-project/infra/es"
 	"mini-project/infra/redis"
 	"mini-project/module/user"
+	"mini-project/module/user/repo"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,10 +21,15 @@ import (
 func main() {
 	redisClient := redis.NewRedisClient()
 	yugaByteClient := db.NewYugabyteClient()
-	userManager := user.NewUserManager(redisClient, yugaByteClient)
+	esClient := es.NewElasticsearchClient()
+
+	userRepo := repo.NewUserDBRepo(redisClient, yugaByteClient, esClient)
+	userManager := user.NewUserManager(userRepo)
+
 	restHandler := rest.NewRestHandler(userManager)
 	gqlHander := graph.NewGQLHandler(userManager)
 	handler := api.NewHandler(restHandler, gqlHander)
+
 	router := handler.InitHandlers()
 
 	var wait time.Duration

@@ -66,7 +66,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
-	User(ctx context.Context, searchable string) (*model.User, error)
+	User(ctx context.Context, searchable string) ([]*model.User, error)
 }
 
 type executableSchema struct {
@@ -233,14 +233,13 @@ type User{
 
 type Query {
   users: [User]
-  user(searchable:String!): User
+  user(searchable:String!): [User]
 }
 
 input NewUser{
   nama: String!
   umur: Int!
   alamat: String!
-  searchable: String!
 }
 
 type Mutation {
@@ -477,9 +476,9 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.([]*model.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖminiᚑprojectᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚕᚖminiᚑprojectᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2670,14 +2669,6 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("alamat"))
 			it.Alamat, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "searchable":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("searchable"))
-			it.Searchable, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
